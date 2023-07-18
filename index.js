@@ -5,10 +5,16 @@ const app = express();
 const port = process.env.PORT || 5000;
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+
+// password protection
+const Cryptr = require("cryptr");
+const cryptr = new Cryptr(precess.env.TOKEN_SECRET);
 // json web token
 app.use(express.json());
 app.use(cors());
 
+// const encryptedString = cryptr.encrypt("bacon");
+// const decryptedString = cryptr.decrypt(encryptedString);
 async function run() {
   try {
     mongoose.connect(process.env.MONGODB_URL);
