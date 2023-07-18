@@ -20,8 +20,8 @@ app.use(cors());
 // var token = jwt.sign({ foo: "bar" }, "shhhhh");
 
 // create jwt
-const createJWT = (email) => {
-  const token = jwt.sign({ email }, process.env.TOKEN_SECRET);
+const createJWT = async (email) => {
+  const token = await jwt.sign({ email }, process.env.TOKEN_SECRET);
   return token;
 };
 
@@ -93,8 +93,8 @@ async function run() {
         try {
           body.password = cryptr.encrypt(body.password);
           const user = addUser(body);
-          user.token = createJWT(user.email);
-          res.send({ data: user, isError: false });
+          const token = await createJWT(user.email);
+          res.send({ data: user, isError: false, token });
         } catch (err) {
           // throw new Error();
           res.send({ data: {}, isError: true, message: "Ops! try again" });
