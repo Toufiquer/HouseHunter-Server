@@ -36,6 +36,7 @@ async function run() {
     mongoose.connect(process.env.MONGODB_URL);
 
     const Schema = mongoose.Schema;
+    // user Schema
     const _schema = {
       userName: { type: String, require: true, unique: false },
       phone: { type: String, require: true, unique: false },
@@ -44,8 +45,43 @@ async function run() {
       userRole: { type: String, require: true, unique: false },
     };
 
+    const _houseSchema = {
+      email: { type: String, require: true, unique: false },
+      address: { type: String, require: true, unique: false },
+      city: { type: String, require: true, unique: false },
+      bedrooms: { type: String, require: true, unique: false },
+      bathrooms: { type: String, require: true, unique: false },
+      roomSize: { type: String, require: true, unique: false },
+      picture: { type: String, require: true, unique: false },
+      availabilityDate: { type: String, require: true, unique: false },
+      rentPerMonth: { type: String, require: true, unique: false },
+      phoneNumber: { type: String, require: true, unique: false },
+      description: { type: String, require: true, unique: false },
+    };
+
     const UserSchema = new Schema(_schema);
+    const HouseSchema = new Schema(_houseSchema);
     const UserModal = mongoose.model("usercollections", UserSchema);
+    const HouseModal = mongoose.model("housecollections", HouseSchema);
+
+    // add houses
+    const addHouses = (data) => {
+      const house = new HouseModal({
+        email: data.email,
+        address: data.address,
+        city: data.city,
+        bedrooms: data.bedrooms,
+        bathrooms: data.bathrooms,
+        roomSize: data.roomSize,
+        picture: data.picture,
+        availabilityDate: data.availabilityDate,
+        rentPerMonth: data.rentPerMonth,
+        phoneNumber: data.phoneNumber,
+        description: data.description,
+      });
+      house.save();
+      return house;
+    };
 
     // add user
     const addUser = (data) => {
@@ -127,7 +163,13 @@ async function run() {
     // add house
     app.post("/houses", async (req, res) => {
       const data = req.body;
-      console.log(data);
+      try {
+        const house = addHouses(data);
+        res.send({ data: user, isError: false });
+      } catch (err) {
+        // throw new Error();
+        res.send({ data: {}, isError: true, message: "Ops! try again" });
+      }
     });
   } catch (err) {
     console.log(err);
