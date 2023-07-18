@@ -81,7 +81,28 @@ async function run() {
       const updateUser = await UserModal.deleteOne(filter);
       return updateUser;
     };
-
+    // Log In api
+    app.post("/usersLogIn", async (req, res) => {
+      const body = req.body;
+      // check exist or not
+      const user = await getAUser({ email: body.email });
+      if (user?.userName) {
+        const dbUserPassword = cryptr.decrypt(user.password);
+        if (dbUserPassword === body.password) {
+          const token = await createJWT(user.email);
+          res.send({ data: user, isError: false, token });
+        } else {
+          res.send({
+            data: {},
+            isError: true,
+            message: "Password does't match",
+          });
+        }
+      } else {
+        res.send({ data: {}, isError: true, message: "User does't exist" });
+      }
+    });
+    // Registration
     app.post("/users", async (req, res) => {
       const body = req.body;
 
