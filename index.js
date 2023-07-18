@@ -84,20 +84,21 @@ async function run() {
 
     app.post("/users", async (req, res) => {
       const body = req.body;
-      try {
-        body.password = cryptr.encrypt(body.password);
-        // check exist or not
-        const user = await getAUser({ email: body.email });
-        if (user.userName) {
-          res.send({ data: {}, isError: true, message: "User already exist" });
-        } else {
+
+      // check exist or not
+      const user = await getAUser({ email: body.email });
+      if (user?.userName) {
+        res.send({ data: {}, isError: true, message: "User already exist" });
+      } else {
+        try {
+          body.password = cryptr.encrypt(body.password);
           const user = addUser(body);
           user.token = createJWT(user.email);
           res.send({ data: user, isError: false });
+        } catch (err) {
+          // throw new Error();
+          res.send({ data: {}, isError: true, message: "Ops! try again" });
         }
-      } catch (err) {
-        // throw new Error();
-        res.send({ data: {}, isError: true });
       }
     });
 
