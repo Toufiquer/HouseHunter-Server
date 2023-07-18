@@ -41,6 +41,7 @@ async function run() {
       phone: { type: String, require: true, unique: false },
       email: { type: String, require: true, unique: true },
       password: { type: String, require: true, unique: false },
+      userRole: { type: String, require: true, unique: false },
     };
 
     const UserSchema = new Schema(_schema);
@@ -53,6 +54,7 @@ async function run() {
         phone: data.phone,
         email: data.email,
         password: data.password,
+        userRole: data.userRole,
       });
       user.save();
       return user;
@@ -105,7 +107,6 @@ async function run() {
     // Registration
     app.post("/users", async (req, res) => {
       const body = req.body;
-
       // check exist or not
       const user = await getAUser({ email: body.email });
       if (user?.userName) {
@@ -123,23 +124,10 @@ async function run() {
       }
     });
 
-    app.get("/update", async (req, res) => {
-      const user = await updateUser("user", { name: "user 01" });
-      res.send({ data: user });
-    });
-
-    app.get("/delete", async (req, res) => {
-      const user = await deleteUser({ name: "user 01" });
-      res.send({ data: user });
-    });
-    app.get("/users/:email", async (req, res) => {
-      const body = req.body;
-      const user = await getAUser();
-      res.send({ data: user });
-    });
-    app.get("/getall", async (req, res) => {
-      const user = await getAllUser();
-      res.send({ data: user });
+    // add house
+    app.post("/houses", async (req, res) => {
+      const data = req.body;
+      console.log(data);
     });
   } catch (err) {
     console.log(err);
