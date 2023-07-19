@@ -101,6 +101,12 @@ async function run() {
       const updatedUser = await HouseModal.findOneAndUpdate(filter, update);
       return updatedUser;
     };
+    // delete house
+    const deleteHouse = async (id) => {
+      const filter = { _id: new ObjectId(id) };
+      const deleteHouse = await HouseModal.deleteOne(filter);
+      return deleteHouse;
+    };
 
     // add user
     const addUser = (data) => {
@@ -209,8 +215,14 @@ async function run() {
       const body = req.body;
       // const allHouses = await getAHouse(id);
       const result = await updateHouse(id, body);
-      console.log(result);
-      res.send({ data: "allHouses", isError: false });
+
+      res.send({ data: result, isError: false });
+    });
+    // delete a house
+    app.delete("/houses/:id", async (req, res) => {
+      const { id } = req.params;
+      const result = await deleteHouse(id);
+      res.send({ data: result, isError: false });
     });
   } catch (err) {
     console.log(err);
