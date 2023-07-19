@@ -82,6 +82,11 @@ async function run() {
       house.save();
       return house;
     };
+    // get all houses
+    const getAllHouses = async () => {
+      const allHouses = await HouseModal.find({});
+      return allHouses;
+    };
 
     // add user
     const addUser = (data) => {
@@ -170,6 +175,11 @@ async function run() {
         // throw new Error();
         res.send({ data: {}, isError: true, message: "Ops! try again" });
       }
+    });
+    // get all houses
+    app.get("/houses", async (req, res) => {
+      const allHouses = await getAllHouses();
+      res.send({ data: allHouses, isError: false });
     });
   } catch (err) {
     console.log(err);
