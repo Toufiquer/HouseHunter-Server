@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 // password protection
 const Cryptr = require("cryptr");
+const { ObjectId } = require("mongodb");
 const cryptr = new Cryptr(process.env.TOKEN_SECRET);
 // json web token
 app.use(express.json());
@@ -87,6 +88,19 @@ async function run() {
       const allHouses = await HouseModal.find({});
       return allHouses;
     };
+    // get a house
+    const getAHouse = async (id) => {
+      const house = await HouseModal.findOne({ _id: new ObjectId(id) });
+      return house;
+    };
+
+    // update house
+    const updateHouse = async (id, data) => {
+      const filter = { _id: new ObjectId(id) };
+      const update = { ...data };
+      const updatedUser = await HouseModal.findOneAndUpdate(filter, update);
+      return updatedUser;
+    };
 
     // add user
     const addUser = (data) => {
@@ -118,6 +132,7 @@ async function run() {
       const updateUser = await UserModal.findOneAndUpdate(filter, update);
       return updateUser;
     };
+
     // delete user
     const deleteUser = async (name) => {
       const filter = { ...name };
@@ -176,10 +191,26 @@ async function run() {
         res.send({ data: {}, isError: true, message: "Ops! try again" });
       }
     });
+
     // get all houses
     app.get("/houses", async (req, res) => {
       const allHouses = await getAllHouses();
       res.send({ data: allHouses, isError: false });
+    });
+    // get a house
+    app.get("/house/:id", async (req, res) => {
+      const { id } = req.params;
+      const allHouses = await getAHouse(id);
+      res.send({ data: allHouses, isError: false });
+    });
+    // update a house
+    app.put("/houses/:id", async (req, res) => {
+      const { id } = req.params;
+      const body = req.body;
+      // const allHouses = await getAHouse(id);
+      const result = await updateHouse(id, body);
+      console.log(result);
+      res.send({ data: "allHouses", isError: false });
     });
   } catch (err) {
     console.log(err);
